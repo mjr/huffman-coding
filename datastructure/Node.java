@@ -27,6 +27,10 @@ public class Node {
             return this.count;
         }
 
+        if (this.letter == -10) {
+            return 1;
+        }
+
         return this.left.getFrequency() + this.right.getFrequency();
     }
 
