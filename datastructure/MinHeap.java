@@ -8,13 +8,17 @@ public class MinHeap {
     private int capacity;
 
     public MinHeap() {
-        this(10);
+        this(1);
     }
 
     public MinHeap(int capacity) {
         nodes = new Node[capacity];
         this.size = 0;
         this.capacity = capacity;
+    }
+
+    public Node[] getNodes() {
+        return nodes;
     }
 
     public void add(Node left, Node right) {
