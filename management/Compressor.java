@@ -1,10 +1,11 @@
 package management;
 
+import datastructure.MinHeap;
+import datastructure.Node;
+
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
-
-import datastructure.Node;
-import datastructure.MinHeap;
 
 public class Compressor {
     private Node root;
@@ -15,6 +16,10 @@ public class Compressor {
 
     public void compress(String nameFile, String nameFileCompressed, String nameFileCodingTable) {
         this.readFile(nameFile);
+
+        if (this.letters.length == 0) {
+            return;
+        }
 
         this.createCodingTree(countFrequency());
 
@@ -28,48 +33,44 @@ public class Compressor {
     }
 
     private void setLetters(String text) {
-        char[] letters = new char[text.length()];
-        text.getChars(0, text.length(), letters, 0);
-        this.letters = letters;
-    }
-
-    private String getSpecialCharacter(char s) {
-        if (Character.isWhitespace(s)) {
-            System.out.println("=======" + Character.getType(s) + "=======");
-        }
-        return Character.toString(s);
+        this.letters = text.toCharArray();
     }
 
     private void showCompressionRatio() {
         double rate = 100.0 - (this.compressedFileSize * 100.0 / this.originalFileSize);
-        System.out.println("Normal size: " + this.originalFileSize);
-        System.out.println("Compressed size: " + this.compressedFileSize);
-        System.out.printf("Compressed is %.2f%% smaller than the original. %n", rate);
+        System.out.println("Tamanho original do arquivo: " + this.originalFileSize + " bytes");
+        System.out.println("Tamanho comprimido do arquivo: " + this.compressedFileSize + " bytes");
+        System.out.printf("O arquivo comprimido é %.2f%% menor que o arquivo original. %n", rate);
     }
 
     private void readFile(String nameFile) {
-        System.out.println("READ " + nameFile);
         File fileRead = File.read(nameFile);
-
         this.setLetters(fileRead.getText());
         this.originalFileSize = fileRead.getSize();
     }
 
     private void writeCompressedFile(String nameFileCompressed) {
-        StringBuilder data = new StringBuilder();
+        StringBuilder binaryStr = new StringBuilder();
         for (char ch: this.letters) {
-            data.append(this.codingTable.get(ch));
+            binaryStr.append(this.codingTable.get(ch));
+        }
+        binaryStr.append(this.codingTable.get((char) -10));
+
+        BitSet bitSet = new BitSet();
+        for (int i = 0; i < binaryStr.length(); i++) {
+            int index = Character.getNumericValue(binaryStr.charAt(i));
+            if (index == 1) {
+                bitSet.set(i);
+            }
         }
 
-        System.out.println("WRITE " + nameFileCompressed);
-        File fileRead = File.write(nameFileCompressed, data.toString());
+        File fileRead = File.write(nameFileCompressed, bitSet.toByteArray());
         this.compressedFileSize = fileRead.getSize();
     }
 
     private void writeCodingTableFile(String nameFileCodingTable) {
         StringBuilder mapAsString = new StringBuilder();
         for (char key: this.codingTable.keySet()) {
-            // System.out.println("-" + getSpecialCharacter(key) + "-");
             String temp = "";
             if (Character.isWhitespace(key)) {
                 temp = (int) key + "-" + this.codingTable.get(key) + "\n";
@@ -79,8 +80,7 @@ public class Compressor {
             mapAsString.append(temp);
         }
 
-        System.out.println("WRITE " + nameFileCodingTable);
-        File.write(nameFileCodingTable, mapAsString.toString());
+        File.write(nameFileCodingTable, mapAsString.toString().getBytes());
     }
 
     private MinHeap countFrequency() {
@@ -91,6 +91,8 @@ public class Compressor {
             }
             count.get(ch).add();
         }
+        count.put((char) -10, new Node(-10));
+        count.get((char) -10).add();
 
         MinHeap minHeap = new MinHeap();
         for (Node n: count.values()) {
@@ -101,6 +103,11 @@ public class Compressor {
     }
 
     private void createCodingTree(MinHeap nodes) {
+        if (nodes.getNodes().length == 1) {
+            this.root = nodes.getNodes()[0];
+            return;
+        }
+
         while (true) {
             Node node1 = nodes.peek();
             nodes.remove();
@@ -120,7 +127,11 @@ public class Compressor {
 
     private void createCodingTable() {
         Map<Character, String> result = new HashMap<>();
-        this.root.fillCodingTable(result, "");
+        if (this.root.isLeaf()) {
+            this.root.fillCodingTable(result, "0");
+        } else {
+            this.root.fillCodingTable(result, "");
+        }
 
         this.codingTable = result;
     }
