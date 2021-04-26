@@ -3,12 +3,17 @@ package management;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Extractor {
+public class Extractor implements ReadFileCompressed {
     private String text;
     private Map<String, Character> codingTable;
     private String result = "";
+    private String nameFileCompressed;
 
     public void extract(String fileCompressedFile, String fileCodingTable, String fileWrite) {
+        this.nameFileCompressed = fileCompressedFile;
+
+        this.isValidFile();
+
         this.readFileCodingTable(fileCodingTable);
 
         this.readFileCompressedFile(fileCompressedFile);
@@ -35,12 +40,16 @@ public class Extractor {
         }
     }
 
+    public /*@ pure @*/ boolean isValidFile() {
+        return this.nameFileCompressed.isEmpty() ? false : true;
+    }
+
     private void readFileCodingTable(String fileCodingTable) {
         File fileRead = File.readExtract(fileCodingTable);
         this.createCodingTable(fileRead.getText());
     }
 
-    private void readFileCompressedFile(String fileCompressedFile) {
+    public void readFileCompressedFile(String fileCompressedFile) {
         File fileCompressedRead = File.readByte(fileCompressedFile);
         this.text = fileCompressedRead.getText();
     }

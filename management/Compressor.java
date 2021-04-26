@@ -7,14 +7,19 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Compressor {
+public class Compressor implements ReadFile {
     private Node root;
     private char[] letters;
     private Map<Character, String> codingTable;
     private long originalFileSize;
     private long compressedFileSize;
+    private String nameFile;
 
     public void compress(String nameFile, String nameFileCompressed, String nameFileCodingTable) {
+        this.nameFile = nameFile;
+
+        this.isValidFile();
+
         this.readFile(nameFile);
 
         if (this.letters.length == 0) {
@@ -43,7 +48,11 @@ public class Compressor {
         System.out.printf("O arquivo comprimido é %.2f%% menor que o arquivo original. %n", rate);
     }
 
-    private void readFile(String nameFile) {
+    public /*@ pure @*/ boolean isValidFile() {
+        return this.nameFile.isEmpty() ? false : true;
+    }
+
+    public void readFile(String nameFile) {
         File fileRead = File.read(nameFile);
         this.setLetters(fileRead.getText());
         this.originalFileSize = fileRead.getSize();
