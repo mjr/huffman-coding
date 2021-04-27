@@ -3,10 +3,12 @@ package datastructure;
 import java.util.Map;
 
 public class Node {
-    private int letter;
-    private int count;
-    private Node left;
-    private Node right;
+    private /*@ spec_public @*/ int letter;
+    private /*@ spec_public @*/ int count;
+    private /*@ spec_public @*/ Node left;
+    private /*@ spec_public @*/ Node right;
+
+    //@ public invariant count >=0;
 
     public Node(int letter) {
         this.letter = letter;
@@ -18,11 +20,11 @@ public class Node {
         this.right = right;
     }
 
-    public boolean isLeaf() {
+    public /*@ pure @*/ boolean isLeaf() {
         return this.left == null && this.right == null;
     }
 
-    public int getFrequency() {
+    public /*@ pure @*/ int getFrequency() {
         if (this.isLeaf()) {
             return this.count;
         }
@@ -34,18 +36,22 @@ public class Node {
         return this.left.getFrequency() + this.right.getFrequency();
     }
 
-    public int getLetter() {
+    public /*@ pure @*/ int getLetter() {
         return this.letter;
     }
 
-    public Node getLeft() {
+    public /*@ pure @*/ Node getLeft() {
         return this.left;
     }
 
-    public Node getRight() {
+    public /*@ pure @*/ Node getRight() {
         return this.right;
     }
 
+    /*@
+     @ assignable count;
+     @ ensures count == \old(count) + 1;
+     @*/
     public void add() {
         this.count += 1;
     }
@@ -61,7 +67,7 @@ public class Node {
     }
 
     @Override
-    public String toString() {
+    public /*@ pure @*/ String toString() {
         return String.format("'%d': %d", this.getLetter(), this.getFrequency());
     }
 }

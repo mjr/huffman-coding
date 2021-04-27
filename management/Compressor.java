@@ -7,18 +7,32 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Compressor implements ReadFile {
+public class Compressor implements ReadFileAndCheckNameFile {
     private Node root;
-    private char[] letters;
+    private /*@ spec_public @*/ char[] letters;
     private Map<Character, String> codingTable;
     private long originalFileSize;
     private long compressedFileSize;
-    private String nameFile;
+    private /*@ spec_public @*/ String nameFile;
 
-    public void compress(String nameFile, String nameFileCompressed, String nameFileCodingTable) {
+    /*@
+    @ public normal_behavior
+	@     requires nameFile != "";
+  	@     requires nameFileCompressed != ";
+  	@     requires nameFileCodingTable != ";
+  	@     assignable this.nameFile;
+	@ also
+	@     public exceptional_behavior
+	@     requires nameFile == "";
+	@     assignable this.nameFile;
+	@     signals_only InvalidFileException;
+  	@*/
+    public void compress(String nameFile, String nameFileCompressed, String nameFileCodingTable) throws InvalidFileException {
         this.nameFile = nameFile;
 
-        this.isValidFile();
+        if (!this.isValidFile()) {
+        	throw new InvalidFileException("Arquivo inválido!");
+        }
 
         this.readFile(nameFile);
 
@@ -49,9 +63,13 @@ public class Compressor implements ReadFile {
     }
 
     public /*@ pure @*/ boolean isValidFile() {
-        return this.nameFile.isEmpty() ? false : true;
+        return !this.nameFile.isEmpty();
     }
 
+    /*@
+    @ also
+    @ requires nameFile != "";
+    @*/
     public void readFile(String nameFile) {
         File fileRead = File.read(nameFile);
         this.setLetters(fileRead.getText());

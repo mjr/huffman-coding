@@ -3,26 +3,36 @@ package management;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Extractor implements ReadFileCompressed {
+public class Extractor implements ReadFileAndCheckNameFile {
     private String text;
     private Map<String, Character> codingTable;
-    private String result = "";
-    private String nameFileCompressed;
+    private /*@ spec_public @*/ String result = "";
+    private String nameFile;
 
-    public void extract(String fileCompressedFile, String fileCodingTable, String fileWrite) {
-        this.nameFileCompressed = fileCompressedFile;
+    /*@
+  	@ requires fileCompressedFile != "";
+  	@ requires fileCodingTable != ";
+  	@ requires fileWrite != ";
+  	@*/
+    public void extract(String fileCompressedFile, String fileCodingTable, String fileWrite) throws InvalidFileException {
+        this.nameFile = fileCompressedFile;
 
-        this.isValidFile();
+        if (!this.isValidFile()) {
+        	throw new InvalidFileException("Arquivo inválido!");
+        }
 
         this.readFileCodingTable(fileCodingTable);
 
-        this.readFileCompressedFile(fileCompressedFile);
+        this.readFile(fileCompressedFile);
 
         this.setResult();
 
         this.writeFile(fileWrite);
     }
 
+    /*@
+  	@ ensures result != "";
+  	@*/
     public void setResult() {
         String temp = "";
         for (int i = 0; i < this.text.length(); i++) {
@@ -41,7 +51,7 @@ public class Extractor implements ReadFileCompressed {
     }
 
     public /*@ pure @*/ boolean isValidFile() {
-        return this.nameFileCompressed.isEmpty() ? false : true;
+        return !this.nameFile.isEmpty();
     }
 
     private void readFileCodingTable(String fileCodingTable) {
@@ -49,7 +59,7 @@ public class Extractor implements ReadFileCompressed {
         this.createCodingTable(fileRead.getText());
     }
 
-    public void readFileCompressedFile(String fileCompressedFile) {
+    public void readFile(String fileCompressedFile) {
         File fileCompressedRead = File.readByte(fileCompressedFile);
         this.text = fileCompressedRead.getText();
     }

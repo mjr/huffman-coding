@@ -3,24 +3,42 @@ package datastructure;
 import java.util.Arrays;
 
 public class MinHeap {
-    private Node[] nodes;
-    private int size;
-    private int capacity;
+    private /*@ spec_public @*/ Node[] nodes;
+    private /*@ spec_public @*/ int size;
+    private /*@ spec_public @*/ int capacity;
 
+    //@ public invariant size >= 0;
+    //@ public invariant capacity >= 0;
+
+  	/*@
+  	@ ensures size == 0;
+  	@ ensures capacity == 1;
+  	@*/
     public MinHeap() {
         this(1);
     }
 
+    /*@
+  	@ requires capacity >= 0;
+  	@ ensures this.nodes.length == capacity;
+  	@ ensures size == 0;
+  	@ ensures this.capacity == capacity;
+  	@*/
     public MinHeap(int capacity) {
-        nodes = new Node[capacity];
+        this.nodes = new Node[capacity];
         this.size = 0;
         this.capacity = capacity;
     }
 
-    public Node[] getNodes() {
-        return nodes;
+    public /*@ pure @*/ Node[] getNodes() {
+        return this.nodes;
     }
 
+    /*@
+  	@ requires left != null;
+  	@ requires right != null;
+  	@ ensures  nodes.length == \old(nodes.length + 1);
+  	@*/
     public void add(Node left, Node right) {
         add(new Node(left, right));
     }
@@ -32,20 +50,22 @@ public class MinHeap {
         size++;
     }
 
-    public int getSize() {
-        return size;
+    //@ ensures \result == size;
+    public /*@ pure @*/ int getSize() {
+        return this.size;
     }
 
-    public Node peek() {
+    //@ ensures \result == nodes[0] || \result == null;
+    public /*@ pure @*/ Node peek() {
         if (isEmpty()) {
             return null;
         }
 
-        return nodes[0];
+        return this.nodes[0];
     }
 
-    public boolean isEmpty() {
-        return getSize() == 0;
+    public /*@ pure @*/ boolean isEmpty() {
+        return this.getSize() == 0;
     }
 
     private boolean hasParent(int index) {
@@ -101,7 +121,7 @@ public class MinHeap {
         }
 
         if (smallest != index) {
-            Node tmp = nodes[index];
+        	Node tmp = nodes[index];
             nodes[index] = nodes[smallest];
             nodes[smallest] = tmp;
 
