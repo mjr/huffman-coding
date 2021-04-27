@@ -3,17 +3,27 @@ package datastructure;
 import java.util.Map;
 
 public class Node {
-    private /*@ spec_public @*/ int letter;
+	private /*@ spec_public @*/ int letter;
     private /*@ spec_public @*/ int count;
     private /*@ spec_public @*/ Node left;
     private /*@ spec_public @*/ Node right;
 
     //@ public invariant count >=0;
 
+    /*@ assignable this.letter;
+     @  ensures this.letter == letter;
+     @*/
     public Node(int letter) {
         this.letter = letter;
     }
 
+    /*@
+     @ requires left != null && right != right;
+     @ assignable this.letter, this.left, this.right;
+     @ ensures this.letter == -1;
+     @ ensures this.left == left;
+     @ ensures this.right == right;
+     @*/
     public Node(Node left, Node right) {
         this.letter = -1;
         this.left = left;
@@ -24,6 +34,23 @@ public class Node {
         return this.left == null && this.right == null;
     }
 
+    /*
+     * requires this.isLeaf() == true || this.letter == -10 || (this.left != null && this.right != null);
+     * ensures \old(this.isLeaf()) == true ==> \result == this.count;
+     * ensures \old(this.letter) == -10 ==> \result == 1;
+     * ensures \old(this.left) != null && \old(this.right) != null) ==> (\result == this.left.getFrequency() + this.right.getFrequency());
+     */
+
+    /*@
+     @   requires this.isLeaf() == true;
+     @   ensures  \result == this.count;
+     @ also
+     @   requires this.letter == -10;
+     @   ensures \result == 1;
+     @ also
+     @   requires this.left != null && this.right != null;
+     @   ensures \result == this.left.getFrequency() + this.right.getFrequency();
+     @*/
     public /*@ pure @*/ int getFrequency() {
         if (this.isLeaf()) {
             return this.count;
@@ -49,13 +76,19 @@ public class Node {
     }
 
     /*@
-    @ assignable count;
-    @ ensures count == \old(count) + 1;
-    @*/
+     @ assignable count;
+     @ ensures count == \old(count) + 1;
+     @*/
     public void add() {
         this.count += 1;
     }
 
+    /*@  requires codeMap != null && edge != null && this.isLeaf() == true;
+     @   ensures codeMap.get(\old((char) this.getLetter())).equals(edge);
+     @ also
+     @   requires codeMap != null && edge != null && this.isLeaf() == false;
+     @
+     @*/
     public void fillCodingTable(Map<Character, String> codeMap, String edge) {
         if (this.isLeaf()) {
             codeMap.put((char) this.getLetter(), edge);

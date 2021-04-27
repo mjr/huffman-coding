@@ -4,33 +4,53 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 
 public class File {
-    private /*@ spec_public */ long size;
-    private /*@ spec_public */ String text;
+    private /*@ spec_public @*/ long size;
+    private /*@ spec_public @*/ String text;
 
     //@ public invariant size >= 0;
 
+    /*@
+    @ public constraint
+    @     \old(size) == size;
+    @*/
+
+    /*@ requires size >= 0;
+     @  assignable this.size;
+     @  ensures this.size == size;
+     @*/
     public File(long size) {
         this.size = size;
     }
 
+    /*@ requires size >= 0;
+     @  requires text != null;
+     @  assignable this.size, this.text;
+     @  ensures this.size == size;
+     @  ensures this.text == text;
+     @*/
     public File(long size, String text) {
         this.size = size;
         this.text = text;
     }
 
+    /*@ requires this.size >= 0;
+    @  ensures \result == this.size;
+    @*/
     public /*@ pure @*/ long getSize() {
         return size;
     }
 
+    /*@ requires this.text != null;
+     @  ensures \result.equals(this.text);
+     @*/
     public /*@ pure @*/ String getText() {
         return text;
     }
 
-    /*@
-    @ requires pathname != null;
-    @ ensures \result.getSize() >= 0;
-    @ ensures \result.getText() != null;
-    @*/
+    /*@ requires pathname != null;
+     @  ensures_redundantly \result.getSize() >= 0;
+     @  ensures_redundantly \result.getText() != null;
+     @*/
     public static File read(String pathname) {
         java.io.File file = new java.io.File(pathname);
         BufferedReader fis = null;
@@ -59,6 +79,11 @@ public class File {
         return new File(file.length(), text);
     }
 
+    /*@ requires pathname != null;
+     @  ensures_redundantly \result.getSize() >= 0;
+     @  ensures_redundantly \result.getText() != null;
+     @  ensures (\forall int i; \result.getSize() > 0 && 0 <= i && i < \result.getText().length(); \result.getText().charAt(i) == '0' || \result.getText().charAt(i) == '1');
+     @*/
     public static File readByte(String pathname) {
         java.io.File file = new java.io.File(pathname);
         DataInputStream in = null;
@@ -89,11 +114,10 @@ public class File {
         return new File(file.length(), text);
     }
 
-    /*@
-    @ requires pathname != null;
-    @ ensures \result.getSize() >= 0;
-    @ ensures \result.getText() != null;
-    @*/
+    /*@ requires pathname != null;
+     @  ensures_redundantly \result.getSize() >= 0;
+     @  ensures_redundantly \result.getText() != null;
+     @*/
     public static File readExtract(String pathname) {
         java.io.File file = new java.io.File(pathname);
         BufferedReader fis = null;
@@ -120,11 +144,10 @@ public class File {
         return new File(file.length(), text);
     }
 
-    /*@
-    @ requires pathname != null;
-    @ requires content != null;
-    @ ensures \result.getSize() >= 0;
-    @*/
+    /*@ requires pathname != null;
+     @  requires content != null;
+     @  ensures_redundantly \result.getSize() >= 0;
+     @*/
     public static File write(String pathname, byte[] content) {
         java.io.File file = new java.io.File(pathname);
         FileOutputStream fos = null;

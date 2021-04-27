@@ -7,7 +7,10 @@ public class Extractor implements ReadFileAndCheckNameFile {
     private String text;
     private Map<String, Character> codingTable;
     private /*@ spec_public @*/ String result = "";
-    private String nameFile;
+    protected boolean nameFileIsValid; //@ in nameFile;
+    /*@
+    @ protected represents nameFile = nameFileIsValid ? "valid" : "invalid";
+    @*/
 
     /*@
     @ requires fileCompressedFile != "";
@@ -15,10 +18,10 @@ public class Extractor implements ReadFileAndCheckNameFile {
     @ requires fileWrite != ";
     @*/
     public void extract(String fileCompressedFile, String fileCodingTable, String fileWrite) throws InvalidFileException {
-        this.nameFile = fileCompressedFile;
+        this.nameFileIsValid = !fileCompressedFile.isEmpty();
 
         if (!this.isValidFile()) {
-        	throw new InvalidFileException("Arquivo inválido!");
+            throw new InvalidFileException("Arquivo inválido!");
         }
 
         this.readFileCodingTable(fileCodingTable);
@@ -51,7 +54,7 @@ public class Extractor implements ReadFileAndCheckNameFile {
     }
 
     public /*@ pure @*/ boolean isValidFile() {
-        return !this.nameFile.isEmpty();
+        return this.nameFileIsValid;
     }
 
     private void readFileCodingTable(String fileCodingTable) {

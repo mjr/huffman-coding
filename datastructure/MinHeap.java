@@ -3,12 +3,20 @@ package datastructure;
 import java.util.Arrays;
 
 public class MinHeap {
-    private /*@ spec_public @*/ Node[] nodes;
+    private /*@ spec_public nullable @*/ Node[] nodes;
     private /*@ spec_public @*/ int size;
     private /*@ spec_public @*/ int capacity;
 
     //@ public invariant size >= 0;
     //@ public invariant capacity >= 0;
+    /*@
+    @ public invariant nodes != null
+    @     && (\forall int i;
+    @         capacity <= i && i < nodes.length;
+    @             nodes[i] == null);
+    @*/
+
+    //@ public initially size == 0;
 
     /*@
     @ ensures size == 0;
@@ -37,12 +45,17 @@ public class MinHeap {
     /*@
     @ requires left != null;
     @ requires right != null;
-    @ ensures  nodes.length == \old(nodes.length + 1);
+    @ ensures nodes.length == \old(nodes.length + 1);
     @*/
     public void add(Node left, Node right) {
         add(new Node(left, right));
     }
 
+    /*@
+    @ requires node != null;
+    @ ensures node == nodes[\old(getSize())];
+    @ ensures size == \old(size + 1);
+    @*/
     public void add(Node node) {
         this.ensureCapacity();
         this.nodes[getSize()] = node;
@@ -55,7 +68,11 @@ public class MinHeap {
         return this.size;
     }
 
-    //@ ensures \result == nodes[0] || \result == null;
+    /*@
+    @ ensures \result == nodes[0] || \result == null;
+    @ ensures nodes.length > 0 ==>
+    @ (\exists int i; 0 <= i && i < nodes.length; \result == nodes[i]);
+    @*/
     public /*@ pure @*/ Node peek() {
         if (isEmpty()) {
             return null;
@@ -76,13 +93,26 @@ public class MinHeap {
         return (int) Math.floor((index - 1) / 2);
     }
 
+    /*@
+    @     requires capacity == getSize();
+    @     ensures nodes.length == \old(nodes.length * 2);
+    @     ensures capacity == getSize() * 2;
+    @ also
+    @     requires capacity != getSize();
+    @     ensures nodes.length == \old(nodes.length);
+    @     ensures capacity == \old(capacity);
+    @*/
     private void ensureCapacity() {
-        if (getSize() == capacity) {
-            this.nodes = Arrays.copyOf(this.nodes, getSize() * 2);
-            capacity = getSize() * 2;
+        if (this.getSize() == this.capacity) {
+            this.nodes = Arrays.copyOf(this.nodes, this.getSize() * 2);
+            this.capacity = this.getSize() * 2;
         }
     }
 
+    /*@
+    @ requires nodes.length > 0;
+    @ ensures size == \old(size - 1);
+    @*/
     public void remove() {
         nodes[0] = nodes[getSize() - 1];
         nodes[getSize() - 1] = null;

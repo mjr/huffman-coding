@@ -13,7 +13,10 @@ public class Compressor implements ReadFileAndCheckNameFile {
     private Map<Character, String> codingTable;
     private long originalFileSize;
     private long compressedFileSize;
-    private /*@ spec_public @*/ String nameFile;
+    protected boolean nameFileIsValid; //@ in nameFile;
+    /*@
+    @ protected represents nameFile = nameFileIsValid ? "valid" : "invalid";
+    @*/
 
     /*@
     @ public normal_behavior
@@ -28,10 +31,10 @@ public class Compressor implements ReadFileAndCheckNameFile {
     @     signals_only InvalidFileException;
     @*/
     public void compress(String nameFile, String nameFileCompressed, String nameFileCodingTable) throws InvalidFileException {
-        this.nameFile = nameFile;
+        this.nameFileIsValid = !nameFile.isEmpty();
 
         if (!this.isValidFile()) {
-        	throw new InvalidFileException("Arquivo inválido!");
+            throw new InvalidFileException("Arquivo inválido!");
         }
 
         this.readFile(nameFile);
@@ -63,7 +66,7 @@ public class Compressor implements ReadFileAndCheckNameFile {
     }
 
     public /*@ pure @*/ boolean isValidFile() {
-        return !this.nameFile.isEmpty();
+        return this.nameFileIsValid;
     }
 
     /*@
