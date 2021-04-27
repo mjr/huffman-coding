@@ -10,20 +10,20 @@ public class MinHeap {
     //@ public invariant size >= 0;
     //@ public invariant capacity >= 0;
 
-  	/*@
-  	@ ensures size == 0;
-  	@ ensures capacity == 1;
-  	@*/
+    /*@
+    @ ensures size == 0;
+    @ ensures capacity == 1;
+    @*/
     public MinHeap() {
         this(1);
     }
 
     /*@
-  	@ requires capacity >= 0;
-  	@ ensures this.nodes.length == capacity;
-  	@ ensures size == 0;
-  	@ ensures this.capacity == capacity;
-  	@*/
+    @ requires capacity >= 0;
+    @ ensures this.nodes.length == capacity;
+    @ ensures size == 0;
+    @ ensures this.capacity == capacity;
+    @*/
     public MinHeap(int capacity) {
         this.nodes = new Node[capacity];
         this.size = 0;
@@ -35,10 +35,10 @@ public class MinHeap {
     }
 
     /*@
-  	@ requires left != null;
-  	@ requires right != null;
-  	@ ensures  nodes.length == \old(nodes.length + 1);
-  	@*/
+    @ requires left != null;
+    @ requires right != null;
+    @ ensures  nodes.length == \old(nodes.length + 1);
+    @*/
     public void add(Node left, Node right) {
         add(new Node(left, right));
     }
@@ -121,7 +121,7 @@ public class MinHeap {
         }
 
         if (smallest != index) {
-        	Node tmp = nodes[index];
+            Node tmp = nodes[index];
             nodes[index] = nodes[smallest];
             nodes[smallest] = tmp;
 

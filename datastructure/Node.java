@@ -49,9 +49,9 @@ public class Node {
     }
 
     /*@
-     @ assignable count;
-     @ ensures count == \old(count) + 1;
-     @*/
+    @ assignable count;
+    @ ensures count == \old(count) + 1;
+    @*/
     public void add() {
         this.count += 1;
     }

@@ -17,16 +17,16 @@ public class Compressor implements ReadFileAndCheckNameFile {
 
     /*@
     @ public normal_behavior
-	@     requires nameFile != "";
-  	@     requires nameFileCompressed != ";
-  	@     requires nameFileCodingTable != ";
-  	@     assignable this.nameFile;
-	@ also
-	@     public exceptional_behavior
-	@     requires nameFile == "";
-	@     assignable this.nameFile;
-	@     signals_only InvalidFileException;
-  	@*/
+    @     requires nameFile != "";
+    @     requires nameFileCompressed != ";
+    @     requires nameFileCodingTable != ";
+    @     assignable this.nameFile;
+    @ also
+    @     public exceptional_behavior
+    @     requires nameFile == "";
+    @     assignable this.nameFile;
+    @     signals_only InvalidFileException;
+    @*/
     public void compress(String nameFile, String nameFileCompressed, String nameFileCodingTable) throws InvalidFileException {
         this.nameFile = nameFile;
 

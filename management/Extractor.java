@@ -10,10 +10,10 @@ public class Extractor implements ReadFileAndCheckNameFile {
     private String nameFile;
 
     /*@
-  	@ requires fileCompressedFile != "";
-  	@ requires fileCodingTable != ";
-  	@ requires fileWrite != ";
-  	@*/
+    @ requires fileCompressedFile != "";
+    @ requires fileCodingTable != ";
+    @ requires fileWrite != ";
+    @*/
     public void extract(String fileCompressedFile, String fileCodingTable, String fileWrite) throws InvalidFileException {
         this.nameFile = fileCompressedFile;
 
@@ -31,8 +31,8 @@ public class Extractor implements ReadFileAndCheckNameFile {
     }
 
     /*@
-  	@ ensures result != "";
-  	@*/
+    @ ensures result != "";
+    @*/
     public void setResult() {
         String temp = "";
         for (int i = 0; i < this.text.length(); i++) {

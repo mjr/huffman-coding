@@ -26,10 +26,11 @@ public class File {
         return text;
     }
 
-    /*@ requires pathname != null;
-     @ ensures \result.getSize() >= 0;
-     @ ensures \result.getText() != null;
-     @*/
+    /*@
+    @ requires pathname != null;
+    @ ensures \result.getSize() >= 0;
+    @ ensures \result.getText() != null;
+    @*/
     public static File read(String pathname) {
         java.io.File file = new java.io.File(pathname);
         BufferedReader fis = null;
@@ -63,9 +64,9 @@ public class File {
         DataInputStream in = null;
         String text = "";
         try {
-        	byte[] bytes = new byte[(int) file.length()];
-        	in = new DataInputStream(new FileInputStream(pathname));
-        	in.readFully(bytes);
+            byte[] bytes = new byte[(int) file.length()];
+            in = new DataInputStream(new FileInputStream(pathname));
+            in.readFully(bytes);
 
             StringBuilder sb = new StringBuilder();
             int i = 0;
@@ -88,10 +89,11 @@ public class File {
         return new File(file.length(), text);
     }
 
-    /*@ requires pathname != null;
-     @ ensures \result.getSize() >= 0;
-     @ ensures \result.getText() != null;
-     @*/
+    /*@
+    @ requires pathname != null;
+    @ ensures \result.getSize() >= 0;
+    @ ensures \result.getText() != null;
+    @*/
     public static File readExtract(String pathname) {
         java.io.File file = new java.io.File(pathname);
         BufferedReader fis = null;
@@ -118,10 +120,11 @@ public class File {
         return new File(file.length(), text);
     }
 
-    /*@ requires pathname != null;
-     @ requires content != null;
-     @ ensures \result.getSize() >= 0;
-     @*/
+    /*@
+    @ requires pathname != null;
+    @ requires content != null;
+    @ ensures \result.getSize() >= 0;
+    @*/
     public static File write(String pathname, byte[] content) {
         java.io.File file = new java.io.File(pathname);
         FileOutputStream fos = null;
